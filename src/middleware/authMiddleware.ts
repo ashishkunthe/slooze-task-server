@@ -7,6 +7,8 @@ dotenv.config();
 declare module "express-serve-static-core" {
   interface Request {
     userId?: string;
+    role?: string;
+    region?: string;
   }
 }
 
@@ -23,12 +25,17 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
     const decode = jwt.verify(token, process.env.JWT_SECRET as string) as {
       userId: string;
+      role: string;
+      region: string;
     };
 
     req.userId = decode.userId;
+    req.role = decode.role;
+    req.region = decode.region;
     next();
   } catch (e) {
     res.json({ message: "something went wrong please try later" });
+    return;
   }
 }
 
