@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoute from "./routes/auth";
 import restaurantRoutes from "./routes/restaurantRoutes";
+import orderRoutes from "./routes/orderRoutes";
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoute);
 app.use("/api/restaurants", restaurantRoutes);
+app.use("/api/orders", orderRoutes);
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING as string)
