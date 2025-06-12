@@ -8,45 +8,102 @@ route.post("/", authMiddleware, async (req, res) => {
   const { items, paymentMethod } = req.body;
   const userId = req.userId;
   const region = req.region;
+
+  if (!items || items.length === 0) {
+    res.json({ message: "Items cannot be empty" });
+    return;
+  }
+
   try {
     const order = await Order.create({
-      userId: userId,
-      region: region,
-      paymentMethod: paymentMethod,
-      items: items,
+      userId,
+      region,
+      paymentMethod,
+      items,
+      status: "created",
     });
-    res.json({
-      message: "order has been placeds",
-      order: order,
-    });
+    res.json({ message: "Order has been placed", order });
   } catch (error) {
-    res.json({
-      message: "something went wrong,try again",
-    });
+    res.json({ message: "Something went wrong, try again" });
   }
 });
 
-route.patch("/:id/checkout", authMiddleware, (req, res) => {
+route.patch("/:id/checkout", authMiddleware, async (req, res) => {
   const role = req.role;
-});
 
-route.delete("/:id", authMiddleware, (req, res) => {});
+  if (role !== "admin" && role !== "manager") {
+    res.json({ message: "Only admin or manager can checkout orders" });
+    return;
+  }
 
-route.get("/", authMiddleware, (req, res) => {
-  const role = req.role;
-  if (role != "admin" || "manager") {
-    res.json({
-      message: "only authorised person can access this route",
-    });
+  try {
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status: "placed" },
+      { new: true }
+    );
+    res.json({ message: "Order placed successfully", order });
+  } catch (err) {
+    res.json({ message: "Failed to checkout order" });
   }
 });
 
-route.patch("/:id/payment-mrthod", authMiddleware, (req, res) => {
+route.delete("/:id", authMiddleware, async (req, res) => {
   const role = req.role;
-  if (role != "admin") {
-    res.json({
-      message: "only authorised person can access this route",
-    });
+
+  if (role !== "admin" && role !== "manager") {
+    res.json({ message: "Only admin or manager can cancel orders" });
+    return;
+  }
+
+  try {
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status: "cancelled" },
+      { new: true }
+    );
+    res.json({ message: "Order cancelled", order });
+  } catch (err) {
+    res.json({ message: "Failed to cancel order" });
   }
 });
+
+route.get("/", authMiddleware, async (req, res) => {
+  const { role, region } = req;
+
+  if (role !== "admin" && role !== "manager") {
+    res.json({ message: "Only admin or manager can access this route" });
+    return;
+  }
+
+  try {
+    const filter = role === "admin" ? {} : { region };
+    const orders = await Order.find(filter);
+    res.json(orders);
+  } catch (err) {
+    res.json({ message: "Failed to fetch orders" });
+  }
+});
+
+route.patch("/:id/payment-method", authMiddleware, async (req, res) => {
+  const role = req.role;
+
+  if (role !== "admin") {
+    res.json({ message: "Only admin can update payment method" });
+    return;
+  }
+
+  try {
+    const { paymentMethod } = req.body;
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { paymentMethod },
+      { new: true }
+    );
+    res.json({ message: "Payment method updated", order });
+  } catch (err) {
+    res.json({ message: "Failed to update payment method" });
+  }
+});
+
 export default route;
