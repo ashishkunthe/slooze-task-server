@@ -128,6 +128,34 @@ Seed the database with the following roles:
 
 ---
 
+## 🌐 API Endpoint Summary (Quick Reference)
+
+### Auth Routes
+
+```
+POST    /api/auth/register
+POST    /api/auth/login
+```
+
+### Restaurant Routes
+
+```
+GET     /api/restaurants
+GET     /api/restaurants/:id/menu
+```
+
+### Order Routes
+
+```
+POST    /api/orders
+PATCH   /api/orders/:id/checkout
+DELETE  /api/orders/:id
+GET     /api/orders
+PATCH   /api/orders/:id/payment-method
+```
+
+---
+
 ## 🙌 Author
 
 Ashish Kunthe
