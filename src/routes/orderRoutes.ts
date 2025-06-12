@@ -26,4 +26,27 @@ route.post("/", authMiddleware, async (req, res) => {
   }
 });
 
+route.patch("/:id/checkout", authMiddleware, (req, res) => {
+  const role = req.role;
+});
+
+route.delete("/:id", authMiddleware, (req, res) => {});
+
+route.get("/", authMiddleware, (req, res) => {
+  const role = req.role;
+  if (role != "admin" || "manager") {
+    res.json({
+      message: "only authorised person can access this route",
+    });
+  }
+});
+
+route.patch("/:id/payment-mrthod", authMiddleware, (req, res) => {
+  const role = req.role;
+  if (role != "admin") {
+    res.json({
+      message: "only authorised person can access this route",
+    });
+  }
+});
 export default route;
