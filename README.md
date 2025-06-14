@@ -4,7 +4,7 @@ This is the backend for a food ordering system built with **Node.js**, **Express
 
 ---
 
-## 🚀 Tech Stack
+## ✨ Tech Stack
 
 - Node.js
 - Express.js
@@ -50,6 +50,8 @@ cd server
 npm install
 npm run dev
 ```
+
+> 🧃️ The database is manually seeded with **restaurant** and **menu item** data for testing purposes.
 
 ---
 
