@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authMiddleware from "../middleware/authMiddleware";
 import { MenuItem, Restaurant } from "../db";
+import mongoose from "mongoose";
 
 const route = Router();
 
@@ -26,12 +27,14 @@ route.get("/:id/menu", authMiddleware, async (req, res) => {
       return;
     }
 
-    if (req.role !== "admin" && req.region !== restaurant.region) {
+    if (req.region !== restaurant.region) {
       res.json({ message: "Access denied: region mismatch" });
       return;
     }
 
-    const menuItems = await MenuItem.find({ restaurantId: req.params.id });
+    const menuItems = await MenuItem.find({
+      restaurantId: new mongoose.Types.ObjectId(req.params.id),
+    });
     res.json(menuItems);
   } catch (err) {
     res.json({ message: "Failed to fetch menu" });
