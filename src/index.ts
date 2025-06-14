@@ -4,12 +4,14 @@ import dotenv from "dotenv";
 import authRoute from "./routes/auth";
 import restaurantRoutes from "./routes/restaurantRoutes";
 import orderRoutes from "./routes/orderRoutes";
+import cors from "cors";
 
 const app = express();
 
 dotenv.config();
 
 app.use(express.json());
+app.use(cors());
 
 app.use("/api/auth", authRoute);
 app.use("/api/restaurants", restaurantRoutes);

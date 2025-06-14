@@ -9,7 +9,7 @@ route.get("/", authMiddleware, async (req, res) => {
 
   try {
     const restaurants = await Restaurant.find(
-      req.role === "admin" ? {} : { region: req.region }
+      req.role === "admin" ? {} : { region: region }
     );
     res.json(restaurants);
   } catch (e) {
