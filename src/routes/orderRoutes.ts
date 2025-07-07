@@ -1,10 +1,10 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import authMiddleware from "../middleware/authMiddleware";
 import { Order } from "../db";
 
 const route = Router();
 
-route.post("/", authMiddleware, async (req, res) => {
+route.post("/", authMiddleware, async (req: Request, res: Response) => {
   const { items, paymentMethod } = req.body;
   const userId = req.userId;
   const region = req.region;
@@ -28,27 +28,31 @@ route.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-route.patch("/:id/checkout", authMiddleware, async (req, res) => {
-  const role = req.role;
+route.patch(
+  "/:id/checkout",
+  authMiddleware,
+  async (req: Request, res: Response) => {
+    const role = req.role;
 
-  if (role !== "admin" && role !== "manager") {
-    res.json({ message: "Only admin or manager can checkout orders" });
-    return;
+    if (role !== "admin" && role !== "manager") {
+      res.json({ message: "Only admin or manager can checkout orders" });
+      return;
+    }
+
+    try {
+      const order = await Order.findByIdAndUpdate(
+        req.params.id,
+        { status: "placed" },
+        { new: true }
+      );
+      res.json({ message: "Order placed successfully", order });
+    } catch (err) {
+      res.json({ message: "Failed to checkout order" });
+    }
   }
+);
 
-  try {
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status: "placed" },
-      { new: true }
-    );
-    res.json({ message: "Order placed successfully", order });
-  } catch (err) {
-    res.json({ message: "Failed to checkout order" });
-  }
-});
-
-route.delete("/:id", authMiddleware, async (req, res) => {
+route.delete("/:id", authMiddleware, async (req: Request, res: Response) => {
   const role = req.role;
 
   if (role !== "admin" && role !== "manager") {
@@ -68,7 +72,7 @@ route.delete("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-route.get("/", authMiddleware, async (req, res) => {
+route.get("/", authMiddleware, async (req: Request, res: Response) => {
   const { role, region } = req;
 
   if (role !== "admin" && role !== "manager") {
@@ -85,25 +89,29 @@ route.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-route.patch("/:id/payment-method", authMiddleware, async (req, res) => {
-  const role = req.role;
+route.patch(
+  "/:id/payment-method",
+  authMiddleware,
+  async (req: Request, res: Response) => {
+    const role = req.role;
 
-  if (role !== "admin") {
-    res.json({ message: "Only admin can update payment method" });
-    return;
-  }
+    if (role !== "admin") {
+      res.json({ message: "Only admin can update payment method" });
+      return;
+    }
 
-  try {
-    const { paymentMethod } = req.body;
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { paymentMethod },
-      { new: true }
-    );
-    res.json({ message: "Payment method updated", order });
-  } catch (err) {
-    res.json({ message: "Failed to update payment method" });
+    try {
+      const { paymentMethod } = req.body;
+      const order = await Order.findByIdAndUpdate(
+        req.params.id,
+        { paymentMethod },
+        { new: true }
+      );
+      res.json({ message: "Payment method updated", order });
+    } catch (err) {
+      res.json({ message: "Failed to update payment method" });
+    }
   }
-});
+);
 
 export default route;

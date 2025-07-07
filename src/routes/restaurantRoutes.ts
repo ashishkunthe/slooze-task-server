@@ -1,11 +1,11 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import authMiddleware from "../middleware/authMiddleware";
 import { MenuItem, Restaurant } from "../db";
 import mongoose from "mongoose";
 
 const route = Router();
 
-route.get("/", authMiddleware, async (req, res) => {
+route.get("/", authMiddleware, async (req: Request, res: Response) => {
   const region = req.region;
 
   try {
@@ -18,7 +18,7 @@ route.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-route.get("/:id/menu", authMiddleware, async (req, res) => {
+route.get("/:id/menu", authMiddleware, async (req: Request, res: Response) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
 

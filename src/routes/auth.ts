@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import { User } from "../db";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
@@ -8,7 +8,7 @@ const route = Router();
 
 dotenv.config();
 
-route.post("/register", async (req, res) => {
+route.post("/register", async (req: Request, res: Response) => {
   const { name, email, password, role, region } = req.body;
 
   const validRoles = ["admin", "manager", "member"];
@@ -48,7 +48,7 @@ route.post("/register", async (req, res) => {
   }
 });
 
-route.post("/login", async (req, res) => {
+route.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
